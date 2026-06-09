@@ -1,0 +1,18 @@
+# 各子项目是独立的 Git 仓，不纳入根仓（避免嵌套仓冲突）
+/airgate-sdk/
+/airgate-core/
+/airgate-openai/
+/airgate-claude/
+/airgate-kiro/
+/airgate-playground/
+/airgate-studio/
+/airgate-epay/
+/airgate-health/
+
+# 实验 / 临时产物目录
+/image2gen/
+/test_output/
+
+# 本地私有配置（保留 .claude/skills 与 AI 指南，忽略本地设置）
+/.claude/settings.local.json
+/.claude/settings.json
