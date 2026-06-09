@@ -6,7 +6,7 @@ description: 在 airgate-core 后端新增或修改 API 接口、领域逻辑、
 # core 后端开发（接口 / 领域逻辑 / Ent 变更）
 
 airgate-core 后端为严格的端口-适配器分层。按以下落点与顺序开发，勿自创结构。
-背景见 `airgate-core/CLAUDE.md` 与 `airgate-core/docs/architecture/ecosystem-v2.md`。
+现状实现见 `airgate-core/docs/architecture/current/core-runtime.md`，开发规则见 `airgate-core/CLAUDE.md`。
 
 ## 第 0 步：参照现有实现
 

@@ -13,11 +13,12 @@ Codex 在本仓库的工作指引。
    - `*.pb.go` → 改 `protocol/proto/` 后 `make proto`
    - theme CSS → `make theme`
    - `plugin.yaml` → `genmanifest` / `make manifest` 生成
-3. **前置必读**：`airgate-core/docs/architecture/ecosystem-v2.md`（生态边界）及所在子项目 `CLAUDE.md`。
+3. **前置必读**：`airgate-core/docs/architecture/current/`（**现状架构，开发依据，对得上代码**）及所在子项目 `CLAUDE.md`。
 4. **复用优先**：复用对应层现有 service/handler/组件，勿新建结构。
 5. **独立 Git 仓**：各子目录经 `go.work` 协作，跨仓改动分仓提交。
 6. 注释/文档用**中文**，命令/路径/标识符/类型名保留**英文**。
 7. **提交信息**：约定式提交 `<type>(<scope>)?: <subject>`（type：`feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert`）。`make setup-hooks` 装 `commit-msg` 钩子（`scripts/commit-msg`）强制校验。
+8. **文档对得上代码（防漂移）**：改动涉及架构（分层/契约/转发/计费/调度/插件职责）须同步更新 `airgate-core/docs/architecture/current/` 对应文档。现状以 `current/` 为准；冲突即漂移，须修正。
 
 ## 任务路由
 
@@ -72,13 +73,13 @@ core 经 hashicorp/go-plugin 将插件作为独立 gRPC 子进程加载。请求
 | `extension` | `sdk.ExtensionPlugin` | 后台任务、自定义 API、支付、健康监控（非网关） |
 | `middleware` | `sdk.MiddlewarePlugin` | 转发周边副作用拦截（审计、脱敏、采样、合规） |
 
-权威架构参考：`airgate-core/docs/architecture/ecosystem-v2.md`。
+权威架构参考：`airgate-core/docs/architecture/current/`。
 
 ## 生态边界（最重要，动手前必对照）
 
-架构核心价值为**可插拔**，越界即腐化。以下为所有开发（含改 core）的铁律。权威依据见 `ecosystem-v2.md` 的「职责速查表 / 当前边界问题 / 宿主能力模型」。
+架构核心价值为**可插拔**，越界即腐化。以下为所有开发（含改 core）的铁律。下表为**目标边界**；当前代码的违反点（OpenAI 错误格式硬编码、provider 字符串特判等）见 `airgate-core/docs/architecture/current/tech-debt.md`，新代码勿加深。
 
-**① 职责速查表（提炼自 ecosystem-v2）**
+**① 职责速查表**
 
 | 组件 | 负责 | **不负责（越界红灯）** |
 |---|---|---|
@@ -106,7 +107,7 @@ core 经 hashicorp/go-plugin 将插件作为独立 gRPC 子进程加载。请求
 2. **SDK 混入业务**：账号/计费/任务等产品逻辑写进 SDK → SDK 仅放契约与运行时。
 3. **网关插件兼任 provider/UI**：上游 OAuth/session、图像任务编排、账号 UI 堆入网关插件 → 按职责拆分。
 
-> 部分插件仍为"网关+provider+UI"混合的过渡态。无需拆历史代码，但新增/改动须按职责归位、勿加深混合。归属存疑时查职责速查表与 `ecosystem-v2.md`。
+> 部分插件仍为"网关+provider+UI"混合的过渡态。无需拆历史代码，但新增/改动须按职责归位、勿加深混合。归属存疑时查职责速查表与 `tech-debt.md`（差距与方向）。
 
 ## 构建命令
 

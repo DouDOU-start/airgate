@@ -6,7 +6,7 @@ description: 开发或修改 AirGate 网关/扩展插件（airgate-openai、airg
 # 插件开发（网关 / 扩展）
 
 所有插件同构：仅依赖 `airgate-sdk`，作为独立 gRPC 子进程被 core 加载。
-本仓信息（id/type/上游）见该插件仓 `CLAUDE.md`；接口契约见 `airgate-sdk/CLAUDE.md`。
+本仓信息（id/type/上游）见该插件仓 `CLAUDE.md`；契约现状见 `airgate-core/docs/architecture/current/plugin-contract.md`，各插件职责现状见 `current/plugins.md`。
 
 ## 🚫 边界铁律
 
@@ -17,7 +17,7 @@ description: 开发或修改 AirGate 网关/扩展插件（airgate-openai、airg
 
 ## 能力归属判断（最关键）
 
-编码前按职责速查表（根 `CLAUDE.md`「生态边界」/ `ecosystem-v2.md`）定位，勿凭直觉就地堆放：
+编码前按职责速查表（根 `CLAUDE.md`「生态边界」）定位，勿凭直觉就地堆放：
 
 - 对外 API 兼容（route、请求/响应格式、SSE/错误形态）→ **Gateway**。
 - 上游厂商认证/token/session/传输/模型发现 → **Provider**（当前多与网关同仓，新增时独立成模块，勿与对外路由耦合）。
