@@ -21,7 +21,7 @@ description: 开发或修改 AirGate 网关/扩展插件（airgate-openai、airg
 
 - 对外 API 兼容（route、请求/响应格式、SSE/错误形态）→ **Gateway**。
 - 对上游厂商的认证/token/session/传输/模型发现 → **Provider 职责**（当前多与网关混在一仓，新增时至少独立成模块，别和对外路由耦合）。
-- 跨 provider 共享的权限/路由/任务/资产/计费/模型目录 → **不是插件该做的，归 Core**，经 Host capability 调用。
+- 跨 provider 共享的权限/路由/任务/资产/计费/模型目录 → **不是插件该做的，归 Core**，经宿主能力调用。
 - 用户产品页面/状态 → **UI 插件**，经 Core public API。
 
 🚩 自检：如果你正要在网关插件里写"上游 OAuth/session、任务持久化、计费策略、跨账号路由"——停，那是 Provider/Core 的活，正在加深越界。
@@ -34,14 +34,14 @@ description: 开发或修改 AirGate 网关/扩展插件（airgate-openai、airg
 | `extension` | `sdk.ExtensionPlugin` | 后台任务、自定义 API、支付、健康监控等**非网关**能力 |
 | `middleware` | `sdk.MiddlewarePlugin` | forward 周边的副作用拦截（审计、脱敏、采样、合规） |
 
-## Host capability：插件怎么用 core 的能力
+## 宿主能力：插件怎么用 core 的能力
 
-插件**不直连** core，而是声明并调用 host capability（core 启动时按声明注入）：
+插件**不直连** core，而是声明并调用宿主能力（core 启动时按声明注入）：
 
 - 在 manifest 用 `requires.host` 声明需要的能力（如 `host.routing@1`、`host.tasks@1`、`host.assets@1`、`host.billing@1`、`host.models@1`）。
 - 运行时经 `Host.Invoke` / `Host.InvokeStream` 调用，**不要**找 core 内部包或 DB 的捷径。
 - 区分：`requires.host` = core 注入给插件的宿主能力；`provides.operations` = 本插件对外可被编排的业务能力。两者别混。
-- 需要新的 host 能力但 core 还没暴露时，**不要在插件侧硬抄 core 逻辑**——这是 core 该补的 capability，先确认而不是绕过。
+- 需要新的 host 能力但 core 还没暴露时，**不要在插件侧硬抄 core 逻辑**——这是 core 该补的能力，先确认而不是绕过。
 
 ## 开发流程
 
