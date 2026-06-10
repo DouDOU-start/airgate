@@ -76,7 +76,7 @@ core 经 hashicorp/go-plugin 将插件作为独立 gRPC 子进程加载。请求
 
 ## 生态边界（最重要，动手前必对照）
 
-架构核心价值为**可插拔**，越界即腐化。以下为所有开发（含改 core）的铁律。`airgate-core/docs/architecture/current/tech-debt.md` 登记了当前代码的已知违反点（OpenAI 错误格式硬编码、provider 字符串特判等）。铁律含义：**新增/改动代码须按职责边界归位，禁止加深已知违反**；历史债务按 tech-debt 排期治理，无需立即重构。
+架构核心价值为**可插拔**，越界即腐化。以下为所有开发（含改 core）的铁律。`airgate-core/docs/architecture/current/tech-debt.md` 登记了当前代码的已知违反点与治理进度（错误格式、provider 特判、metadata 路由等多数热点已改为插件 Metadata 声明 + Core 默认兜底）。铁律含义：**新增/改动代码须按职责边界归位，禁止加深已知违反**；历史债务按 tech-debt 排期治理，无需立即重构。
 
 **① 职责速查表**
 
@@ -90,7 +90,7 @@ core 经 hashicorp/go-plugin 将插件作为独立 gRPC 子进程加载。请求
 
 判断规则：对外客户端兼容 → Gateway；上游厂商认证传输 → Provider；跨 provider 的权限/路由/任务/资产/计费/模型 → Core；用户产品页面状态 → UI 插件。
 
-> 现状偏差：Core 转发层仍含 OpenAI 错误格式；调度/路由含 provider 特判；网关插件混合 provider+UI 职责。详见 `tech-debt.md`。新代码以此表为准，现有偏差按登记排期治理。
+> 现状偏差：网关插件仍混合 provider+UI 职责；HostService 单通道过宽。错误格式/模型家族/调度映射等已改为插件 Metadata 声明（约定表见 `plugin-contract.md`），Core 仅保留默认兜底。详见 `tech-debt.md`。新代码以此表为准，现有偏差按登记排期治理。
 
 **② 依赖方向（单向）**
 

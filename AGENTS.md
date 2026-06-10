@@ -77,7 +77,7 @@ core 经 hashicorp/go-plugin 将插件作为独立 gRPC 子进程加载。请求
 
 ## 生态边界（最重要，动手前必对照）
 
-架构核心价值为**可插拔**，越界即腐化。以下为所有开发（含改 core）的铁律。下表为**目标边界**；当前代码的违反点（OpenAI 错误格式硬编码、provider 字符串特判等）见 `airgate-core/docs/architecture/current/tech-debt.md`，新代码勿加深。
+架构核心价值为**可插拔**，越界即腐化。以下为所有开发（含改 core）的铁律。下表为**目标边界**；当前代码的违反点与治理进度（错误格式/模型家族等多数热点已改为插件 Metadata 声明 + Core 默认兜底）见 `airgate-core/docs/architecture/current/tech-debt.md`，新代码勿加深。
 
 **① 职责速查表**
 
