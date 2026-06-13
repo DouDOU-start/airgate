@@ -36,11 +36,10 @@ description: 开发或修改 AirGate 网关/扩展插件（airgate-openai、airg
 
 ## 宿主能力：插件如何调用 core
 
-插件不直连 core，而是声明并调用宿主能力（core 启动时按声明注入）：
+插件不直连 core，而是声明 capability 并经 Host 通道调用（现状机制，契约见 `plugin-contract.md`）：
 
-- manifest 用 `requires.host` 声明所需能力（如 `host.routing@1`、`host.tasks@1`、`host.assets@1`、`host.billing@1`、`host.models@1`）。
-- 运行时经 `Host.Invoke` / `Host.InvokeStream` 调用，禁止绕道 core 内部包或 DB。
-- `requires.host` = core 注入给插件的宿主能力；`provides.operations` = 本插件对外可被编排的业务能力，二者勿混。
+- 在 Go 代码 `PluginInfo.Capabilities` 声明：`sdk.CapabilityHostInvoke` + 按 method 的 `sdk.CapabilityForHostMethod("tasks.create")`（生成 `host.invoke.tasks.create`）。**不在 manifest 声明**（`requires.host` 版本化分组为目标态，未实现，见 `tech-debt.md`）。
+- 运行时经 `Host.Invoke` / `Host.InvokeStream` 按 method 字符串调用（如 `tasks.create`、`assets.store`）；可用 method 共 19 个，清单见 `current/core-runtime.md`。真正授权由 Core 方法注册表在插件启动时执行；`Init()` 阶段 capability 尚未绑定，不能调 host RPC。
 - 所需 host 能力 core 尚未暴露时，勿在插件侧复制 core 逻辑——应由 core 补充该能力，先确认而非绕过。
 
 ## 开发流程
