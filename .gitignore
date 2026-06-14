@@ -12,6 +12,8 @@
 # 实验 / 临时产物目录
 /image2gen/
 /test_output/
+/.devdata/
+.playwright-mcp
 
 # 本地私有配置（保留 .claude/skills 与 AI 指南，忽略本地设置）
 /.claude/settings.local.json

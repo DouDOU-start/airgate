@@ -6,7 +6,7 @@ description: 开发或修改 AirGate 网关/扩展插件（airgate-openai、airg
 # 插件开发（网关 / 扩展）
 
 所有插件同构：仅依赖 `airgate-sdk`，作为独立 gRPC 子进程被 core 加载。
-本仓信息（id/type/上游）见该插件仓 `CLAUDE.md`；契约现状见 `airgate-core/docs/architecture/current/plugin-contract.md`，各插件职责现状见 `current/plugins.md`。
+本仓信息（id/type/上游）见该插件仓 `CLAUDE.md`；插件契约规则见 skill `core-dev`「插件契约」。
 
 ## 🚫 边界铁律
 
@@ -36,10 +36,10 @@ description: 开发或修改 AirGate 网关/扩展插件（airgate-openai、airg
 
 ## 宿主能力：插件如何调用 core
 
-插件不直连 core，而是声明 capability 并经 Host 通道调用（现状机制，契约见 `plugin-contract.md`）：
+插件不直连 core，而是声明 capability 并经 Host 通道调用（完整规则见 skill `core-dev`「插件契约」）：
 
-- 在 Go 代码 `PluginInfo.Capabilities` 声明：`sdk.CapabilityHostInvoke` + 按 method 的 `sdk.CapabilityForHostMethod("tasks.create")`（生成 `host.invoke.tasks.create`）。**不在 manifest 声明**（`requires.host` 版本化分组为目标态，未实现，见 `tech-debt.md`）。
-- 运行时经 `Host.Invoke` / `Host.InvokeStream` 按 method 字符串调用（如 `tasks.create`、`assets.store`）；可用 method 共 19 个，清单见 `current/core-runtime.md`。真正授权由 Core 方法注册表在插件启动时执行；`Init()` 阶段 capability 尚未绑定，不能调 host RPC。
+- 在 Go 代码 `PluginInfo.Capabilities` 声明：`sdk.CapabilityHostInvoke` + 按 method 的 `sdk.CapabilityForHostMethod("tasks.create")`（生成 `host.invoke.tasks.create`）。**不在 manifest 声明**。
+- 运行时经 `Host.Invoke` / `Host.InvokeStream` 按 method 字符串调用（如 `tasks.create`、`assets.store`）；可用 method 共 19 个，清单见 skill `core-dev`。真正授权由 Core 方法注册表在插件启动时执行；`Init()` 阶段 capability 尚未绑定，不能调 host RPC。
 - 所需 host 能力 core 尚未暴露时，勿在插件侧复制 core 逻辑——应由 core 补充该能力，先确认而非绕过。
 
 ## 开发流程
