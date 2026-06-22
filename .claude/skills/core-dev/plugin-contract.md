@@ -36,9 +36,29 @@
 
 ## 技术债（勿加深）
 
-一类热点（协议/产品硬编码）已全部收口为 Metadata 声明 + Core 默认兜底，**勿再扩展硬编码**。
+### 越界判定标准（core 侧 provider/模型/插件名硬编码）
 
-仍开放的结构性债务：
+铁律：**core 禁止按 provider 名 / 模型字符串 / 插件 id 做行为分支**。协议与平台差异一律经插件 Metadata 约定键声明（见上「Metadata 约定表」），core 只保留与具体厂商无关的「默认兜底」。一处硬编码是否越界，按此机械判定：
+
+- **OK-兜底**（允许）：仅当插件未声明对应 Metadata 键时才生效，且不写死某具体厂商的产品语义。
+  - 例：`scheduler/family.go` 的 `gpt-image` 家族折叠（`ModelInfo.Metadata["family"]` 优先）；`plugin/quota.go` 的 `metadata_only` 路径回退（`Metadata["metadata_only"]` 优先）；`plugin/error_format.go` 的格式常量（由 `Metadata["error_format"]` 选择，default OpenAI）。
+- **越界**（禁止新增，已登记项勿加深）：core 用 `platform=="openai"`、`HasPrefix(model,"claude-")`、插件名常量等做**调度 / 计费 / 路由 / 资产**的行为分支，且无 Metadata 间接层。
+
+### 已登记的硬编码越界（勿加深，按排期治理）
+
+经审计确认的现存越界（与「已收口」相反，core 仍假定「OpenAI 是唯一图像 / 协议翻译 provider」）。**新增图像或协议翻译插件前须先把对应项归位，否则功能不正确**：
+
+| 位置 | 越界 | 应归位 |
+|---|---|---|
+| `internal/plugin/scheduling_model.go:31,34,87-118,137` | `platform=="openai"` + `/v1/messages` 特判 → `openAIAnthropicSchedulingModels` 按 `claude-*` 前缀映射到 gpt/kiro 模型；strip `openai/`/`oai/` 前缀 | 全量迁到插件 `RouteDefinition.Metadata["scheduling_model_map"]`，删除 core 内 claude/openai 翻译分支 |
+| `internal/routing/selector.go:113-117` | 仅 `platform=="openai"` 需 `image_enabled` 门控，其余平台默认放行 | 改为按 `ModelInfo.Capabilities` / Metadata 声明的图像能力门控 |
+| `internal/billing/image_pricing.go:9,35` | 仅 `pluginName=="openai"`（`OpenAIPluginSettingsKey`）可声明图片档位定价 | 改为 capability/Metadata 门控，任意图像 provider 平等 |
+| `internal/plugin/image_pricing.go:44-46` | `gpt-image`/`dall-e` 前缀判定图像模型（capability 检查在前，前缀为 fallback） | 前缀清单移出 core，由插件模型目录声明 image capability |
+| `internal/plugin/asset_cleanup.go:20` | `generatedTaskExecutorPluginID = "gateway-openai"` 写死图像任务归属插件 | 改为 Metadata 声明资产清理归属，允许多图像 provider |
+
+> 治理顺序：先归位「图像 provider 假定」一类（selector/billing/image_pricing/asset_cleanup），再拆 `scheduling_model.go` 的协议翻译映射（最大、牵涉 openai 插件 Metadata 补全）。
+
+### 仍开放的结构性债务
 - **HostService 过宽**：单一 Invoke 通道暴露 19 个 method，目标为版本化 capability 分组
 - **Manifest 无 v2**：无 `requires.host` / `provides` 声明
 - **网关插件混合职责**：gateway + provider + UI 同仓，新代码按职责归位、勿加深
