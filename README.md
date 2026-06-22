@@ -32,18 +32,17 @@ make dev       # 完整开发环境（后端热重载 + 前端 vite + 插件 wat
 
 | 想了解 | 看哪份 |
 |---|---|
-| **架构现状（权威，对得上代码）** | [`airgate-core/docs/architecture/current/`](airgate-core/docs/architecture/current/)：运行时 / 插件契约 / 插件现状 / 技术债 |
+| **架构现状（权威，对得上代码）** | [`core-dev` skill](.claude/skills/core-dev/)：`backend`（后端分层）/ `forwarding`（转发·调度·计费）/ `task`（任务状态机）/ `plugin-contract`（契约·技术债）/ `frontend` |
 | 生态边界与开发护栏 | 根 [`CLAUDE.md`](CLAUDE.md)（职责速查表、红线）；各子仓 `CLAUDE.md` 叠加本仓规则 |
-| core ↔ 插件契约细节 | [`plugin-contract.md`](airgate-core/docs/architecture/current/plugin-contract.md)（proto、Host.Invoke、Metadata 约定键、manifest） |
-| 已知架构差距 / 勿加深清单 | [`tech-debt.md`](airgate-core/docs/architecture/current/tech-debt.md) |
-| 边界治理 / 重构路线（规划） | [`boundary-refactor-plan.md`](airgate-core/docs/architecture/boundary-refactor-plan.md) |
-| 任务子系统设计 | [`task-state-machine.md`](airgate-core/docs/architecture/task-state-machine.md) |
+| core ↔ 插件契约细节 | [`plugin-contract.md`](.claude/skills/core-dev/plugin-contract.md)（Metadata 约定表、Host.Invoke、Capability） |
+| 已知架构差距 / 勿加深清单 | [`plugin-contract.md`](.claude/skills/core-dev/plugin-contract.md) 「技术债」节 |
+| 任务子系统设计 | [`task.md`](.claude/skills/core-dev/task.md) |
+| 网关插件开发护栏 | [`develop-plugin` skill](.claude/skills/develop-plugin/SKILL.md)（边界铁律、能力归属、构建流程） |
 | SDK 包内边界规范 | [`airgate-sdk/docs/sdk-package-boundaries.md`](airgate-sdk/docs/sdk-package-boundaries.md) |
 | 插件前端样式规范 | [`airgate-sdk/docs/plugin-style-guide.md`](airgate-sdk/docs/plugin-style-guide.md) |
-| 历史设计稿（仅存档，勿作依据） | `airgate-core/docs/architecture/archived/` |
 
-文档维护规则：**现状以 `current/` 为准，改架构须同步改文档**（防漂移红线，见根 `CLAUDE.md`）。设计/规划类文档须在开头声明定位，与现状文档区分。
+文档维护规则：**现状以代码 + `core-dev` / `develop-plugin` skill 为准，改架构须同步改对应 skill**（防漂移红线，见根 `CLAUDE.md`）。
 
 ## 开发
 
-AI 辅助开发护栏见 [`CLAUDE.md`](CLAUDE.md)（[`AGENTS.md`](AGENTS.md) 为其指针）。共享 skill 位于 `.claude/skills/`：`core-backend-feature` / `core-frontend-page` / `develop-plugin` / `airgate-ci-check`。
+AI 辅助开发护栏见 [`CLAUDE.md`](CLAUDE.md)（[`AGENTS.md`](AGENTS.md) 为其指针）。共享 skill 位于 `.claude/skills/`：`core-dev` / `develop-plugin` / `airgate-ci-check`。
