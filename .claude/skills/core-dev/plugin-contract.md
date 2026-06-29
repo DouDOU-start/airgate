@@ -2,7 +2,11 @@
 
 ## Metadata 约定表
 
-**新增约定键须同步登记本表**；未声明回退 Core 历史默认。
+**新增约定键须同步登记本表**；未声明回退 Core 历史默认。按来源分三类登记。
+
+### A. 插件静态声明键（ModelInfo / RouteDefinition / PluginInfo）
+
+调度/路由/错误格式据此分支，未声明回退 Core 默认。
 
 | 键 | 位置 | 含义 |
 |---|---|---|
@@ -12,6 +16,27 @@
 | `scheduling_model` | ModelInfo | 调度等价模型映射（精确 ID） |
 | `scheduling_model_map` | RouteDefinition | 请求模型 → 调度模型前缀映射表（JSON） |
 | `account.oauth_plans` | PluginInfo | OAuth 套餐识别规则（JSON） |
+
+### B. 用量快照键（`ForwardOutcome.Usage.Metadata`，插件每次转发上报）
+
+Core 经 `internal/plugin/usage_adapter.go` / `outcome.go` 读取，落入 `usage_log` 展示列。属插件私有维度，Core 不据此计费，仅记录展示。
+
+| 键 | 消费位置 | 含义 |
+|---|---|---|
+| `image_size` | usage_adapter.go:96,112,145（亦认 `size`/`resolution`） | 图像分辨率 |
+| `image_tier` | usage_adapter.go:100,115,142（亦认 `tier`/`resolution_tier`） | 图像档位 |
+| `service_tier` | usage_adapter.go:92,109（亦认 `tier`） | 服务档位（如 fast/flex） |
+| `reasoning_effort` | outcome.go:328（`normalizeReasoningEffort` 归一化） | 推理强度 |
+
+### C. 计费注解键（`UsageLog.Metadata`，**Core 计费时写入**，非插件声明）
+
+由 `internal/billing/recorder.go` 在记账时写入，供前端展示/审计，插件勿自行设置。
+
+| 键 | 写入位置 | 含义 |
+|---|---|---|
+| `billing_mode` | recorder.go:355,361 | 计费模式：`fixed_image_price` / `image_token` |
+| `fixed_unit_price` | recorder.go:357 | 图像固定单价（仅 `fixed_image_price` 模式） |
+| `fixed_unit` | recorder.go:358 | 固定计费单位标签（如 `USD/image`） |
 
 ## Host.Invoke 方法
 

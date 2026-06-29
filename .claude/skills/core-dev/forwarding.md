@@ -206,7 +206,7 @@ SDK `Usage` → 计费 `CalculateInput` 的转换（`usage_adapter.go`）：
 
 - 格式选择：`RouteDefinition.Metadata["error_format"]`（路由级优先）→ `PluginInfo.Metadata["error_format"]` → 默认 `openai`
 - `setRequestErrorFormat()` 在请求入口写入 Gin context，后续所有 `protocolError()` 按此格式
-- Anthropic 格式映射 6 种 type：`invalid_request_error` / `authentication_error` / `permission_error` / `not_found_error` / `rate_limit_error` / `api_error` / `overloaded_error`
+- Anthropic 格式映射 7 种 type：`invalid_request_error` / `authentication_error` / `permission_error` / `not_found_error` / `rate_limit_error` / `api_error` / `overloaded_error`（其中 `overloaded_error` 对应 HTTP 503）
 - 429 响应同时写 `Retry-After`（秒）和 `Retry-After-Ms`（毫秒）两个 header
 
 ---
